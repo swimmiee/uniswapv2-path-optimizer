@@ -1,5 +1,5 @@
 # uniswapv2-path-optimizer
-Optimal swap path finder UniswapV2-based AMM DEX model
+Optimal swap path finder for UniswapV2-based AMM DEX model
 
 ## Installation
 ```bash
