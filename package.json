@@ -1,0 +1,29 @@
+{
+  "name": "uniswapv2-path-optimizer",
+  "version": "1.0.0",
+  "description": "Optimal swap path finder UniswapV2-based AMM DEX model",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "ts-node .",
+    "prebuild": "rm -rf dist",
+    "build": "tsc",
+    "typechain": "typechain --target ethers-v5 --out-dir src/typechain src/abi/*.json",
+    "test": "ts-mocha src/test/**/* --timeout 999999"
+  },
+  "keywords": ["uniswapv2", "uniswap", "ethereum", "bfs", "swap", "ERC20"],
+  "author": "danny <dannylsa67@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@ethersproject/providers": "^5.7.2",
+    "@typechain/ethers-v5": "^10.1.0",
+    "@types/chai": "^4.3.3",
+    "@types/mocha": "^10.0.0",
+    "chai": "^4.3.6",
+    "mocha": "^10.1.0",
+    "ts-mocha": "^10.0.0",
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "ethers": "^5.7.2"
+  }
+}
