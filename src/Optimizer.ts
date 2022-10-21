@@ -353,4 +353,4 @@ class UniswapV2PathOptimizer {
 }
 
 
-export { UniswapV2PathOptimizer };
+export default UniswapV2PathOptimizer;

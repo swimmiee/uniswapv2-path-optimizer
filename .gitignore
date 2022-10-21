@@ -1,4 +1,2 @@
 node_modules/
-dist
-src/typechain
 .DS_Store

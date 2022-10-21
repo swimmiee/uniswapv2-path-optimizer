@@ -1,5 +1,5 @@
 import { providers, utils } from "ethers"
-import { UniswapV2PathOptimizer } from ".."
+import Optimizer from ".."
 import { Provider } from "@ethersproject/providers";
 import { Factory, Factory__factory } from "../typechain";
 import { expect } from "chai";
@@ -23,10 +23,10 @@ before(() => {
     factory = Factory__factory.connect(UniswapFactoryAddress, provider);
 })
 
-let optimizer: UniswapV2PathOptimizer;
+let optimizer: Optimizer;
 describe("UniswapV2PathOptimizer", async function(){
     before(async () => {
-        optimizer = new UniswapV2PathOptimizer({
+        optimizer = new Optimizer({
             provider,
             factoryAddress: UniswapFactoryAddress,
             routerAddress: UniswapRouterAddress,

@@ -8,11 +8,12 @@ npm i uniswapv2-path-optimizer
 
 ## Initialize
 ```ts
+import Optimizer from "uniswapv2-path-optimizer";
 const provider = new providers.JsonRpcProvider("RPC_NODE_URL");
 const UniswapFactoryAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
 const UniswapRouterAddress = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
 
-const optimizer = new UniswapV2PathOptimizer({
+const optimizer = new Optimizer({
     provider,
     factoryAddress: UniswapFactoryAddress,
     routerAddress: UniswapRouterAddress,

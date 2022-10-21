@@ -1,6 +1,10 @@
 {
   "name": "uniswapv2-path-optimizer",
-  "version": "1.0.0",
+  "version": "1.0.8",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/swimmiee/uniswapv2-path-optimizer.git"
+  },
   "description": "Optimal swap path finder for UniswapV2-based AMM DEX model",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,9 +13,17 @@
     "prebuild": "rm -rf dist",
     "build": "tsc",
     "typechain": "typechain --target ethers-v5 --out-dir src/typechain src/abi/*.json",
-    "test": "ts-mocha src/test/**/* --timeout 999999"
+    "test": "ts-mocha src/test/**/* --timeout 999999",
+    "prepublish": "build"
   },
-  "keywords": ["uniswapv2", "uniswap", "ethereum", "bfs", "swap", "ERC20"],
+  "keywords": [
+    "uniswapv2",
+    "uniswap",
+    "ethereum",
+    "bfs",
+    "swap",
+    "ERC20"
+  ],
   "author": "danny <dannylsa67@gmail.com>",
   "license": "ISC",
   "devDependencies": {
