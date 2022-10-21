@@ -2,7 +2,8 @@
   "name": "uniswapv2-path-optimizer",
   "version": "1.0.0",
   "description": "Optimal swap path finder for UniswapV2-based AMM DEX model",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "start": "ts-node .",
     "prebuild": "rm -rf dist",

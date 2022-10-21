@@ -3,7 +3,7 @@
     "target": "es2016",
     "module": "commonjs",
     "rootDir": "./src",
-    "outDir": "./dist",
+    "outDir": "dist",
     "esModuleInterop": true,
     "strict": true,         
     "skipLibCheck": true,
@@ -13,6 +13,7 @@
     "src/**/*"
   ],
   "exclude": [
-    "src/test"
+    "src/test",
+    "dist"
   ]
 }
