@@ -20,15 +20,23 @@ export class Token {
 }
 
 export class TokenWithAmount extends Token {
-    private amount!: BigNumber;
+    public amount!: BigNumber;
+    public amountWithoutPriceImpact!: BigNumber;
+
     constructor(token:Token, _amount: BigNumberish){
         super(token.address, token.symbol, token.decimals);
         this.amount = BigNumber.from(_amount);
+        // first initiate amount, and calculate right before returned from off chain
+        this.amountWithoutPriceImpact = this.amount;
     }
     format(){
         return utils.formatUnits(this.amount, this.decimals);
     }
-    bn(){
-        return this.amount;
+    formatWithoutPriceImpact(){
+        return utils.formatUnits(this.amountWithoutPriceImpact, this.decimals);
+    }
+    
+    public setAmountWithoutPriceImpact(value : BigNumber) {
+        this.amountWithoutPriceImpact = value;
     }
 }

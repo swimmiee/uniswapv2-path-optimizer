@@ -75,9 +75,9 @@ describe("UniswapV2PathOptimizer", async function(){
         const optimalResult = await optimizer.getOptimalOutPathOnChain({
             from, to, amountIn, maxLength
         });
-        expect(optimalResult[0].address).to.eq(from);
-        expect(optimalResult[optimalResult.length - 1].address).to.eq(to);
-        expect(optimalResult.length).to.lessThanOrEqual(maxLength)
+        expect(optimalResult.amountInWithToken().address).to.eq(from);
+        expect(optimalResult.amountOutWithToken().address).to.eq(to);
+        expect(optimalResult.pathLength()).to.lessThanOrEqual(maxLength)
     })
 
     it("onChain:amountIn", async function () {
@@ -87,25 +87,24 @@ describe("UniswapV2PathOptimizer", async function(){
         const optimalResult = await optimizer.getOptimalInPathOnChain({
             from, to, amountOut, maxLength}
         );
-        expect(optimalResult[0].address).to.eq(from);
-        expect(optimalResult[optimalResult.length - 1].address).to.eq(to);
-        expect(optimalResult.length).to.lessThanOrEqual(maxLength)
+        expect(optimalResult.amountInWithToken().address).to.eq(from);
+        expect(optimalResult.amountOutWithToken().address).to.eq(to);
+        expect(optimalResult.pathLength()).to.lessThanOrEqual(maxLength)
     })
 
     it.only("offChain:amountOut", async function () {
         const [from, to] = [USDC, WBTC];
-        const amountIn = utils.parseUnits("1", 6);
+        const amountIn = utils.parseUnits("10000", 6);
         const maxLength = 4;
         const optimalResult = optimizer.getOptimalOutPathOffChain({
             from, to, amountIn, maxLength
         });
-        expect(optimalResult[0].address).to.eq(from);
-        expect(optimalResult[optimalResult.length - 1].address).to.eq(to);
-        expect(optimalResult.length).to.lessThanOrEqual(maxLength);
-        console.log(optimalResult)
+        expect(optimalResult.amountInWithToken().address).to.eq(from);
+        expect(optimalResult.amountOutWithToken().address).to.eq(to);
+        expect(optimalResult.pathLength()).to.lessThanOrEqual(maxLength);
     })
 
-    it.only("offChain:amountIn", async function () {
+    it("offChain:amountIn", async function () {
         const [from, to] = [WBTC, USDC];
         const amountOut = utils.parseUnits("1", 6);
         const maxLength = 4;
@@ -113,8 +112,7 @@ describe("UniswapV2PathOptimizer", async function(){
             from, to, amountOut, maxLength
         });
         expect(optimalResult[0].address).to.eq(from);
-        expect(optimalResult[optimalResult.length - 1].address).to.eq(to);
-        expect(optimalResult.length).to.lessThanOrEqual(maxLength)
-        console.log(optimalResult)
+        expect(optimalResult.amountOutWithToken().address).to.eq(to);
+        expect(optimalResult.pathLength()).to.lessThanOrEqual(maxLength)
     })
 })

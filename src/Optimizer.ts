@@ -2,9 +2,9 @@ import multicall from "./utils/multicall";
 import { Provider } from "@ethersproject/providers";
 import { Factory, Factory__factory, Router__factory, Router, ERC20__factory, Pair__factory } from "./typechain";
 import { BigNumber, BigNumberish, constants, utils } from "ethers";
-import { address, Amounts, AmountsInResult, AmountsOutResult, GetInPathParams, GetOutPathParams, MulticallCallDataInput, Pool, PoolReserves, Reserve, UniswapV2PathOptimizerProps } from "./types";
+import { address, AmountsCallResult, GetInPathParams, GetOptimalInPathParams, GetOptimalOutPathParams, GetOutPathParams, MulticallCallDataInput, Pool, PoolReserves, Reserve, UniswapV2PathOptimizerProps } from "./types";
 import { Token } from "./Token";
-import { amountsInResult, amountsOutResult } from "./Result";
+import { AmountsInResult, AmountsOutResult } from "./Result";
 
 class UniswapV2PathOptimizer {
     private _provider!: Provider
@@ -214,22 +214,59 @@ class UniswapV2PathOptimizer {
                 queue.push(history.concat([adjacent]));
             })
         }
+
         return paths;
     }
 
-    private toAmountsOutResult(paths: number[][], amountsOuts: Amounts[]){
-        return amountsOuts.map(({amounts}, i) => amountsOutResult(
-            paths[i].map(tId => this._tokens[tId]),
-            amounts
-        )).sort((a, b) => Number(b.amountOut.sub(a.amountOut).gt(0)));
-    }
-    private toAmountsInResult(paths: number[][], amountsIns: Amounts[]){
-        return amountsIns
-            .map(({amounts}, i) => amountsInResult(
-                paths[i].map(tId => this._tokens[tId]),
+    private toAmountsOutResult(
+        paths: number[][],
+        amountsOuts: BigNumber[][], 
+        take?: number
+    ): AmountsOutResult[]{
+        return amountsOuts.map((amounts, index) => ({
+            index,
+            result: new AmountsOutResult(
+                paths[index].map(tId => this._tokens[tId]),
                 amounts
-            ))
-            .sort((a, b) => Number(a.amountIn.sub(b.amountIn).gt(0)));
+            )
+        }))
+        .sort((a, b) => Number(b.result.amountOut().sub(a.result.amountOut()).gt(0)))
+        .slice(0, take)
+        .map(({index, result}) => {
+            // get withoutPriceImpact at last step
+            const amountsWithoutPriceImpact = this.getAmountsOut(
+                result.amountIn(),
+                paths[index],
+                false
+            );
+            AmountsOutResult.setPriceImpact(result, amountsWithoutPriceImpact);
+            return result
+        });
+    }
+    private toAmountsInResult(
+        paths: number[][],
+        amountsIns: BigNumber[][], 
+        take?: number
+    ): AmountsInResult[]{
+        return amountsIns.map((amounts, index) => ({
+            index,
+            result: new AmountsInResult(
+                paths[index].map(tId => this._tokens[tId]),
+                amounts
+            )
+        }))
+        .sort((a, b) => Number(a.result.amountIn().sub(b.result.amountIn()).gt(0)))
+        .slice(0, take)
+        .map(({index, result}) => {
+            // get withoutPriceImpact at last step
+            const amountsWithoutPriceImpact = this.getAmountsIn(
+                result.amountOut(),
+                paths[index],
+                false
+            );
+            AmountsOutResult.setPriceImpact(result, amountsWithoutPriceImpact);
+            return result
+        });
     }
 
     // onchain
@@ -237,7 +274,8 @@ class UniswapV2PathOptimizer {
         from,
         to,
         amountIn,
-        maxLength
+        maxLength,
+        take
     }:GetOutPathParams):Promise<AmountsOutResult[]>{
         const paths = this.bfs(from, to, maxLength);
         const calls:MulticallCallDataInput[] = paths.map(
@@ -251,8 +289,8 @@ class UniswapV2PathOptimizer {
                 ]
             })
         );
-        const amountsOuts = await this.multicall<Amounts>(calls);
-        return this.toAmountsOutResult(paths, amountsOuts);
+        const amountsOuts = await this.multicall<AmountsCallResult>(calls);
+        return this.toAmountsOutResult(paths, amountsOuts.map(outs => outs.amounts), take);
     }
 
     public async getOptimalOutPathOnChain(props: GetOutPathParams):Promise<AmountsOutResult>{
@@ -263,7 +301,8 @@ class UniswapV2PathOptimizer {
         from,
         to,
         amountOut,
-        maxLength
+        maxLength,
+        take
     }: GetInPathParams):Promise<AmountsInResult[]>{
         const paths = this.bfs(from, to, maxLength);
         const calls:MulticallCallDataInput[] = paths.map(
@@ -277,16 +316,17 @@ class UniswapV2PathOptimizer {
                 ]
             })
         );
-        const amountsIns = await this.multicall<Amounts>(calls);
-        return this.toAmountsInResult(paths, amountsIns);
+        const amountsIns = await this.multicall<AmountsCallResult>(calls);
+        return this.toAmountsInResult(paths, amountsIns.map(ins => ins.amounts), take);
     }
 
-    public async getOptimalInPathOnChain(props: GetInPathParams):Promise<AmountsInResult>{
-        return (await this.getInPathsOnChain(props))[0];
+    public async getOptimalInPathOnChain(props: GetOptimalInPathParams):Promise<AmountsInResult>{
+        return (await this.getInPathsOnChain({...props, take: 1}))[0];
     }
 
     /**************
       * Off Chain
+      * Without Price Impact should be calculated in off chain
      **************/
     private getReserves(tokenInId: number, tokenOutId: number):PoolReserves{
         const {feeBps, token0, reserve0, reserve1} = this.getPoolByTokenId(tokenInId, tokenOutId);
@@ -296,59 +336,59 @@ class UniswapV2PathOptimizer {
         return { feeBps, reserveIn, reserveOut };
     }
 
-    public getAmountOut(tokenAId: number, tokenBId: number, amountIn: BigNumberish){
+    public getAmountOut(tokenAId: number, tokenBId: number, amountIn: BigNumberish, priceImpact:boolean = true){
         const {feeBps, reserveIn, reserveOut} = this.getReserves(tokenAId, tokenBId);
         const amountInWithFee = BigNumber.from(amountIn).mul(10000 - feeBps);
         const numerator = amountInWithFee.mul(reserveOut);
-        const denominator = reserveIn.mul(10000).add(amountInWithFee);
+        const denominator = priceImpact
+            ? reserveIn.mul(10000).add(amountInWithFee)
+            : reserveIn.mul(10000);
         return numerator.div(denominator);
     }
 
-    public getAmountIn(tokenAId: number, tokenBId: number, amountOut: BigNumberish){
+    public getAmountIn(tokenAId: number, tokenBId: number, amountOut: BigNumberish, priceImpact:boolean = true){
         const {feeBps, reserveIn, reserveOut} = this.getReserves(tokenAId, tokenBId);
         const numerator = reserveIn.mul(amountOut).mul(10000);
-        const denominator = reserveOut.sub(amountOut).mul(10000 - feeBps);
+        const denominator = priceImpact
+            ? reserveOut.sub(amountOut).mul(10000 - feeBps)
+            : reserveOut.mul(10000 - feeBps);
         return numerator.div(denominator).add(1);
     }
 
-    public getAmountsOut(amountIn: BigNumberish, path: number[]): BigNumber[]{
+    public getAmountsOut(amountIn: BigNumberish, path: number[], priceImpact:boolean = true): BigNumber[]{
         const amounts = new Array(path.length).fill(0).map(() => BigNumber.from(0)); 
         amounts[0] = BigNumber.from(amountIn);
         for (let i = 0; i < path.length - 1; i++)
-            amounts[i + 1] = this.getAmountOut(path[i], path[i + 1], amounts[i]);
+            amounts[i + 1] = this.getAmountOut(path[i], path[i + 1], amounts[i], priceImpact);
         return amounts;
     }
 
-    public getAmountsIn(amountOut: BigNumberish, path: number[]): BigNumber[]{
+    public getAmountsIn(amountOut: BigNumberish, path: number[], priceImpact:boolean = true): BigNumber[]{
         const amounts = new Array(path.length).fill(0).map(() => BigNumber.from(0)); 
         amounts[amounts.length - 1] = BigNumber.from(amountOut);
         for (let i = path.length - 1; i > 0; i--)
-            amounts[i - 1] = this.getAmountIn(path[i - 1], path[i], amounts[i]);
+            amounts[i - 1] = this.getAmountIn(path[i - 1], path[i], amounts[i], priceImpact);
         return amounts;
     }
 
-    public getOutPathsOffChain({from, to, amountIn, maxLength}:GetOutPathParams):AmountsOutResult[]{
+    public getOutPathsOffChain({from, to, amountIn, maxLength, take}:GetOutPathParams):AmountsOutResult[]{
         const paths = this.bfs(from, to, maxLength);
-        const amountsOuts:Amounts[] = paths.map(
-            path => ({ amounts: this.getAmountsOut(amountIn, path)})
-        )
-        return this.toAmountsOutResult(paths, amountsOuts);
+        const amountsOuts:BigNumber[][] = paths.map(path => this.getAmountsOut(amountIn, path));
+        return this.toAmountsOutResult(paths, amountsOuts, take);
     }
 
-    public getOptimalOutPathOffChain(props: GetOutPathParams):AmountsOutResult{
-        return this.getOutPathsOffChain(props)[0];
+    public getOptimalOutPathOffChain(props: GetOptimalOutPathParams):AmountsOutResult{
+        return this.getOutPathsOffChain({...props, take: 1})[0];
     }
 
-    public getInPathsOffChain({from, to, amountOut, maxLength}: GetInPathParams):AmountsInResult[]{
+    public getInPathsOffChain({from, to, amountOut, maxLength, take}: GetInPathParams):AmountsInResult[]{
         const paths = this.bfs(from, to, maxLength);
-        const amountsIns:Amounts[] = paths.map(
-            path => ({ amounts: this.getAmountsIn(amountOut, path)})
-        )
-        return this.toAmountsInResult(paths, amountsIns);
+        const amountsIns:BigNumber[][] = paths.map(path => this.getAmountsIn(amountOut, path));
+        return this.toAmountsInResult(paths, amountsIns, take);
     }
 
-    public getOptimalInPathOffChain(props: GetInPathParams):AmountsInResult{
-        return this.getInPathsOffChain(props)[0];
+    public getOptimalInPathOffChain(props: GetOptimalInPathParams):AmountsInResult{
+        return this.getInPathsOffChain({...props, take: 1})[0];
     }
 }
 

@@ -40,24 +40,25 @@ export interface Reserve {
     _blockTimestampLast: number; 
 }
 
-export interface Amounts {
+export interface AmountsCallResult {
     amounts: BigNumber[]
 }
 
-export interface GetInPathParams {
-    from: address,
-    to: address,
-    amountOut: BigNumberish,
+interface GetPathParamsBase {
+    from: address
+    to: address
     maxLength: number
-};
-export interface GetOutPathParams {
-    from: address,
-    to: address,
-    amountIn: BigNumberish,
-    maxLength: number
-};
+}
 
-type PriceImpact = {priceImpactBps: number}
-export type PathResult =  TokenWithAmount[] & {formatted: string[]};
-export type AmountsOutResult = PathResult & {amountOut: BigNumber} & PriceImpact;
-export type AmountsInResult = PathResult & {amountIn: BigNumber} & PriceImpact;
+export interface GetOptimalInPathParams extends GetPathParamsBase {
+    amountOut: BigNumberish
+};
+export interface GetOptimalOutPathParams extends GetPathParamsBase {
+    amountIn: BigNumberish
+};
+export interface GetInPathParams extends GetOptimalInPathParams {
+    take?: number
+};
+export interface GetOutPathParams extends GetOptimalOutPathParams {
+    take?: number
+};

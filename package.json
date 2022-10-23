@@ -14,7 +14,7 @@
     "build": "tsc",
     "typechain": "typechain --target ethers-v5 --out-dir src/typechain src/abi/*.json",
     "test": "ts-mocha src/test/**/* --timeout 999999",
-    "prepublish": "build"
+    "prepublish": "npm run build"
   },
   "keywords": [
     "uniswapv2",

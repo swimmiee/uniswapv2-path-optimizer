@@ -1,21 +1,62 @@
 import { BigNumber } from "ethers";
 import { Token, TokenWithAmount } from "./Token";
-import { AmountsInResult, AmountsOutResult, PathResult } from "./types";
 
-function result(_path: Token[], _amounts: BigNumber[]):PathResult{
-    const path = _path.map((token, i) => new TokenWithAmount(token, _amounts[i]));
-    return Object.assign(path, {formatted: path.map(token => token.format())});
+export abstract class PathResult {
+    private _path!: TokenWithAmount[]
+    constructor(path: Token[], amounts: BigNumber[]){
+        this._path = path.map(
+            (token, i) => new TokenWithAmount(token, amounts[i])
+        );
+    }
+    static setPriceImpact(result: PathResult, amountsWithoutPriceImpact: BigNumber[]){
+        result._path.forEach((path, i) => {
+            path.setAmountWithoutPriceImpact(amountsWithoutPriceImpact[i]);
+        })
+    }
+    public path(){
+        return this._path;
+    }
+    public pathLength(){
+        return this._path.length;
+    }
+    public format(){
+        return this.path().map(token => token.format())
+    }
+    public priceImpactBps(){
+        throw new Error('priceImpactBps() must be implement.');
+    }
+    public amountInWithToken(): TokenWithAmount{
+        return this.path()[0]
+    }
+    public amountOutWithToken(): TokenWithAmount{
+        const _path = this.path();
+        return _path[_path.length - 1]
+    }
+    public amountIn(){
+        return this.amountInWithToken().amount
+    }
+    public amountOut(): BigNumber{
+        return this.amountOutWithToken().amount
+    }
 }
 
-export function amountsOutResult(_path: Token[], _amounts: BigNumber[]):AmountsOutResult{
-    return Object.assign(
-        result(_path, _amounts),
-        {amountOut: _amounts[_amounts.length - 1], priceImpactBps: 10000}   // temp
-    )
+export class AmountsOutResult extends PathResult {
+    public priceImpactBps(): number{
+        const amountOut = this.amountOutWithToken();
+        return amountOut.amountWithoutPriceImpact
+            .sub(amountOut.amount)
+            .mul(1E4)
+            .div(amountOut.amountWithoutPriceImpact)
+            .toNumber()
+    }
 }
-export function amountsInResult(_path: Token[], _amounts: BigNumber[]):AmountsInResult{
-    return Object.assign(
-        result(_path, _amounts),
-        {amountIn: _amounts[0], priceImpactBps: 10000}     // temp
-    )
+export class AmountsInResult extends PathResult {
+    public priceImpactBps(): number{
+        const amountIn = this.amountInWithToken();
+        return amountIn.amount
+            .sub(amountIn.amountWithoutPriceImpact)
+            .mul(1E4)
+            .div(amountIn.amount)
+            .toNumber()
+    }
 }
