@@ -1,12 +1,12 @@
 # uniswapv2-path-optimizer
 Optimal swap path finder for UniswapV2-based AMM DEX model
 
-## Installation
+# Installation
 ```bash
 npm i uniswapv2-path-optimizer
 ```
 
-## Initialize
+# Initialize
 ```ts
 import Optimizer from "uniswapv2-path-optimizer";
 const provider = new providers.JsonRpcProvider("RPC_NODE_URL");
@@ -29,7 +29,7 @@ const USDC = "0x...";
 await optimizer.init([WETH, USDC, USDT, DAI, WBTC, BNB, UNI, SUSHI]);
 ```
 
-## Optimal Path for largest amountOut
+# Optimal Path for largest amountOut
 ```ts
 const optimalResult = optimizer.getOptimalInPathOffChain({
     from: USDC,     // address of ERC20 token 
@@ -39,7 +39,7 @@ const optimalResult = optimizer.getOptimalInPathOffChain({
 });
 ```
 
-## Optimal Path for smallest amountIn
+# Optimal Path for smallest amountIn
 ```ts
 const optimalResult = optimizer.getOptimalInPathOffChain({
     from: WBTC,     // address of ERC20 token 
@@ -49,17 +49,56 @@ const optimalResult = optimizer.getOptimalInPathOffChain({
 });
 ```
 
-## Refresh tokens & pairs
+# Refresh tokens & pairs
 ```ts
 await optimizer.refresh();
 ```
 
 
-## Core Entities
-### PathResult
+# Core Entities
+## UniswapV2PathOptimizer
+### functions for get tokens & pools
+**`tokens(): Token[]`**  
+**`pools(): Pool[]`**  
+**`getToken(id: number): Token`**  
+**`getTokenByAddress(address: address): Token|undefined`**  
+**`getTokenId(address: address): number`**  
+**`getPoolByTokenId(tokenAId: number, tokenBId: number): Pool`**  
+**`getPoolByAddress(tokenA: address, tokenB: address): Pool`**   
+
+### functions for setting
+**`async init(tokens: address[]): Promise<void>`**  
+fetch tokens & pools info from blockchain
+**`async refresh()`**  
+refresh pools' reserved amounts
+**`setFee(tokenA: address, tokenB: address, newFeeBps: number)`**  
+
+
+### Calculate path on-chain
+**`async getOutPathsOnChain(props: GetOutPathParams):Promise<AmountsOutResult[]>`**  
+**`async getOptimalOutPathOnChain(props: GetOutPathParams):Promise<AmountsOutResult>`**  
+**`async getInPathsOnChain(props: GetInPathParams):Promise<AmountsInResult[]>`**  
+**`async getOptimalInPathOnChain(props: GetOptimalInPathParams):Promise<AmountsInResult>`**  
+
+### Calculate path off-chain
+**`getOutPathsOffChain(props: GetOutPathParams):AmountsOutResult[]`**  
+**`getOptimalOutPathOffChain(props: GetOptimalOutPathParams):AmountsOutResult`**  
+**`getInPathsOffChain(props: GetInPathParams):AmountsInResult[]`**  
+**`getOptimalInPathOffChain(props: GetOptimalInPathParams):AmountsInResult`**  
+
+### Basic calculator
+**`quote(tokenInId: number, tokenOutId: number, amountIn: BigNumberish): BigNumber`**
+**`getAmountOut(tokenAId: number, tokenBId: number, amountIn: BigNumberish, priceImpact:boolean = true)`**  
+**`getAmountIn(tokenAId: number, tokenBId: number, amountOut: BigNumberish, priceImpact:boolean = true)`**  
+**`getAmountsOut(amountIn: BigNumberish, path: number[], priceImpact:boolean = true): BigNumber[]`**  
+**`getAmountsIn(amountOut: BigNumberish, path: number[], priceImpact:boolean = true): BigNumber[]`**  
+
+
+
+## PathResult
 extended by AmountsInResult, AmountsOutResult  
 
-**Properties**
+### Properties
 
 | property  	| type                                   	|
 |-----------	|----------------------------------------	|
@@ -68,7 +107,7 @@ extended by AmountsInResult, AmountsOutResult
 | amountOut 	| BigNumber                              	|
 
 
-**Methods**  
+### Methods  
 
 **`format(): String[]`**  
 returns array of formatted strings from amounts in `path` tokens using tokens' own decimals.  
@@ -87,8 +126,8 @@ returns amountIn amount with "from" token info.
 returns amountOut amount with "to" token info.
 
 
-### TokenWithAmount
-**Properties**
+## TokenWithAmount
+### Properties
 
 | property                 	| type      	|
 |--------------------------	|-----------	|
@@ -99,7 +138,7 @@ returns amountOut amount with "to" token info.
 | amountWithoutPriceImpact 	| BigNumber 	|
 
 
-**Methods**  
+### Methods  
 
 **`format(): string`**  
 returns formatted string from `amount` using `decimals`.  

@@ -38,23 +38,26 @@ class UniswapV2PathOptimizer {
 
     private checkIsReady(){
         if(!this._ready){
-            throw Error('execute "setTokens" method first.');
+            throw Error('execute "init" method first.');
         }
     }
-    public tokens(){
+    public tokens(): Token[]{
         this.checkIsReady();
         return this._tokens;
     }
-    public getToken(id: number){
+    public pools(): Pool[]{
+        this.checkIsReady();
+        return this._pools;
+    }
+    public getToken(id: number): Token{
         return this._tokens[id];
     }
-    public getTokenByAddress(address: address){
+    public getTokenByAddress(address: address): Token | undefined{
         return this._tokens.find(t => t.address === address);
     }
-    public getTokenId(address: address){
+    public getTokenId(address: address): number{
         return this._tokens.findIndex(t => t.address === utils.getAddress(address));
     }
-
     public getPoolByTokenId(tokenAId: number, tokenBId: number){
         this.checkIsReady();
         const N = this.tokens().length;
@@ -192,7 +195,7 @@ class UniswapV2PathOptimizer {
         return adjacents;
     }
 
-    public bfs(from: address, to: address, maxLength: number): number[][]{
+    private bfs(from: address, to: address, maxLength: number): number[][]{
         const start = this.getTokenId(from);
         const finish = this.getTokenId(to);
 
@@ -334,6 +337,10 @@ class UniswapV2PathOptimizer {
             ? [reserve0, reserve1]
             : [reserve1, reserve0];
         return { feeBps, reserveIn, reserveOut };
+    }
+    public quote(tokenInId: number, tokenOutId: number, amountIn: BigNumberish): BigNumber {
+        const {reserveIn, reserveOut} = this.getReserves(tokenInId, tokenOutId);
+        return BigNumber.from(amountIn).mul(reserveOut).div(reserveIn);
     }
 
     public getAmountOut(tokenAId: number, tokenBId: number, amountIn: BigNumberish, priceImpact:boolean = true){

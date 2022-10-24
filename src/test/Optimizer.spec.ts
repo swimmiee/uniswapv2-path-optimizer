@@ -61,13 +61,6 @@ describe("UniswapV2PathOptimizer", async function(){
         )
     })
 
-    it("bfs", function(){
-        const paths = optimizer.bfs(USDC, USDT, 10);
-        expect(paths.length).to.eq(152);
-        expect(paths[0]).to.deep.eq([1, 2]);
-        expect(paths[1]).to.deep.eq([1, 0, 2]);
-    })
-
     it("onChain:amountOut", async function () {
         const [from, to] = [USDC, WBTC];
         const amountIn = utils.parseUnits("1000", 6);

@@ -1,6 +1,5 @@
 import { BigNumber, BigNumberish, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import { TokenWithAmount } from "./Token";
 
 export type address = string;
 
