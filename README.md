@@ -72,7 +72,7 @@ fetch tokens & pools info from blockchain
 **`async refresh()`**  
 refresh pools' reserved amounts
 **`setFee(tokenA: address, tokenB: address, newFeeBps: number)`**  
-
+- change the feeBps of pool
 
 ### Calculate path on-chain
 **`async getOutPathsOnChain(props: GetOutPathParams):Promise<AmountsOutResult[]>`**  
@@ -88,10 +88,18 @@ refresh pools' reserved amounts
 
 ### Basic calculator
 **`quote(tokenInId: number, tokenOutId: number, amountIn: BigNumberish): BigNumber`**
-**`getAmountOut(tokenAId: number, tokenBId: number, amountIn: BigNumberish, priceImpact:boolean = true)`**  
-**`getAmountIn(tokenAId: number, tokenBId: number, amountOut: BigNumberish, priceImpact:boolean = true)`**  
-**`getAmountsOut(amountIn: BigNumberish, path: number[], priceImpact:boolean = true): BigNumber[]`**  
-**`getAmountsIn(amountOut: BigNumberish, path: number[], priceImpact:boolean = true): BigNumber[]`**  
+**`getAmountOut(tokenAId: number, tokenBId: number, amountIn: BigNumberish, priceImpact?:boolean)`**  
+`priceImpact: boolean` if false, calculates without considering the fee. `default: true`  
+
+**`getAmountIn(tokenAId: number, tokenBId: number, amountOut: BigNumberish, priceImpact?:boolean)`**  
+`priceImpact: boolean` if false, calculates without considering the fee. `default: true`  
+
+**`getAmountsOut(amountIn: BigNumberish, path: number[], priceImpact?:boolean): BigNumber[]`**  
+`priceImpact: boolean` if false, calculates without considering the fee. `default: true`  
+
+**`getAmountsIn(amountOut: BigNumberish, path: number[], priceImpact?:boolean): BigNumber[]`**  
+`priceImpact: boolean` if false, calculates without considering the fee. `default: true`  
+
 
 
 
