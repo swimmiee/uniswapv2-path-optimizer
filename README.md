@@ -17,6 +17,8 @@ const optimizer = new Optimizer({
     provider,
     factoryAddress: UniswapFactoryAddress,
     routerAddress: UniswapRouterAddress,
+    feeBps: 30                  // opttional, default 30 (0.3%)
+    multicallAddress: "0x..."   // optional for some major chains
 });
 
 const WETH = "0x...";
@@ -68,9 +70,11 @@ await optimizer.refresh();
 
 ### functions for setting
 **`async init(tokens: address[]): Promise<void>`**  
-fetch tokens & pools info from blockchain
+fetch tokens & pools info from blockchain  
+
 **`async refresh()`**  
-refresh pools' reserved amounts
+refresh pools' reserved amounts  
+
 **`setFee(tokenA: address, tokenB: address, newFeeBps: number)`**  
 - change the feeBps of pool
 
