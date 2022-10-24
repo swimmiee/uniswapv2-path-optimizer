@@ -60,51 +60,49 @@ await optimizer.refresh();
 # Core Entities
 ## UniswapV2PathOptimizer
 ### functions for get tokens & pools
-**`tokens(): Token[]`**  
-**`pools(): Pool[]`**  
-**`getToken(id: number): Token`**  
-**`getTokenByAddress(address: address): Token|undefined`**  
-**`getTokenId(address: address): number`**  
-**`getPoolByTokenId(tokenAId: number, tokenBId: number): Pool`**  
-**`getPoolByAddress(tokenA: address, tokenB: address): Pool`**   
+- **`tokens(): Token[]`**  
+- **`pools(): Pool[]`**  
+- **`getToken(id: number): Token`**  
+- **`getTokenByAddress(address: address): Token|undefined`**  
+- **`getTokenId(address: address): number`**  
+- **`getPoolByTokenId(tokenAId: number, tokenBId: number): Pool`**  
+- **`getPoolByAddress(tokenA: address, tokenB: address): Pool`**   
 
 ### functions for setting
-**`async init(tokens: address[]): Promise<void>`**  
-fetch tokens & pools info from blockchain  
+- **`async init(tokens: address[]): Promise<void>`**  
+  fetch tokens & pools info from blockchain  
 
-**`async refresh()`**  
-refresh pools' reserved amounts  
+- **`async refresh()`**  
+  refresh pools' reserved amounts  
 
-**`setFee(tokenA: address, tokenB: address, newFeeBps: number)`**  
-- change the feeBps of pool
+- **`setFee(tokenA: address, tokenB: address, newFeeBps: number)`**  
+  change the feeBps of pool
 
 ### Calculate path on-chain
-**`async getOutPathsOnChain(props: GetOutPathParams):Promise<AmountsOutResult[]>`**  
-**`async getOptimalOutPathOnChain(props: GetOutPathParams):Promise<AmountsOutResult>`**  
-**`async getInPathsOnChain(props: GetInPathParams):Promise<AmountsInResult[]>`**  
-**`async getOptimalInPathOnChain(props: GetOptimalInPathParams):Promise<AmountsInResult>`**  
+- **`async getOutPathsOnChain(props: GetOutPathParams):Promise<AmountsOutResult[]>`**  
+- **`async getOptimalOutPathOnChain(props: GetOutPathParams):Promise<AmountsOutResult>`**  
+- **`async getInPathsOnChain(props: GetInPathParams):Promise<AmountsInResult[]>`**  
+- **`async getOptimalInPathOnChain(props: GetOptimalInPathParams):Promise<AmountsInResult>`**  
 
 ### Calculate path off-chain
-**`getOutPathsOffChain(props: GetOutPathParams):AmountsOutResult[]`**  
-**`getOptimalOutPathOffChain(props: GetOptimalOutPathParams):AmountsOutResult`**  
-**`getInPathsOffChain(props: GetInPathParams):AmountsInResult[]`**  
-**`getOptimalInPathOffChain(props: GetOptimalInPathParams):AmountsInResult`**  
+- **`getOutPathsOffChain(props: GetOutPathParams):AmountsOutResult[]`**  
+- **`getOptimalOutPathOffChain(props: GetOptimalOutPathParams):AmountsOutResult`**  
+- **`getInPathsOffChain(props: GetInPathParams):AmountsInResult[]`**  
+- **`getOptimalInPathOffChain(props: GetOptimalInPathParams):AmountsInResult`**  
 
 ### Basic calculator
-**`quote(tokenInId: number, tokenOutId: number, amountIn: BigNumberish): BigNumber`**
-**`getAmountOut(tokenAId: number, tokenBId: number, amountIn: BigNumberish, priceImpact?:boolean)`**  
-`priceImpact: boolean` if false, calculates without considering the fee. `default: true`  
+- **`quote(tokenInId: number, tokenOutId: number, amountIn: BigNumberish): BigNumber`**
+- **`getAmountOut(tokenAId: number, tokenBId: number, amountIn: BigNumberish, priceImpact?:boolean)`**  
+  `priceImpact: boolean` if false, calculates without considering the fee. `default: true`  
 
-**`getAmountIn(tokenAId: number, tokenBId: number, amountOut: BigNumberish, priceImpact?:boolean)`**  
-`priceImpact: boolean` if false, calculates without considering the fee. `default: true`  
+- **`getAmountIn(tokenAId: number, tokenBId: number, amountOut: BigNumberish, priceImpact?:boolean)`**  
+  `priceImpact: boolean` if false, calculates without considering the fee. `default: true`  
 
-**`getAmountsOut(amountIn: BigNumberish, path: number[], priceImpact?:boolean): BigNumber[]`**  
-`priceImpact: boolean` if false, calculates without considering the fee. `default: true`  
+- **`getAmountsOut(amountIn: BigNumberish, path: number[], priceImpact?:boolean): BigNumber[]`**  
+  `priceImpact: boolean` if false, calculates without considering the fee. `default: true`  
 
-**`getAmountsIn(amountOut: BigNumberish, path: number[], priceImpact?:boolean): BigNumber[]`**  
-`priceImpact: boolean` if false, calculates without considering the fee. `default: true`  
-
-
+- **`getAmountsIn(amountOut: BigNumberish, path: number[], priceImpact?:boolean): BigNumber[]`**  
+  `priceImpact: boolean` if false, calculates without considering the fee. `default: true`  
 
 
 ## PathResult
@@ -121,21 +119,21 @@ extended by AmountsInResult, AmountsOutResult
 
 ### Methods  
 
-**`format(): String[]`**  
-returns array of formatted strings from amounts in `path` tokens using tokens' own decimals.  
+- **`format(): String[]`**  
+  returns array of formatted strings from amounts in `path` tokens using tokens' own decimals.  
 
-**`formatWithoutPriceImpact(): String[]`**  
-returns array of formatted strings from amountsWithoutPriceImpact in `path` tokens using tokens' own decimals.
+- **`formatWithoutPriceImpact(): String[]`**  
+  returns array of formatted strings from amountsWithoutPriceImpact in `path` tokens using tokens' own decimals.
 
-**`priceImpactBps(): number`**  
-returns price impact when swapping with `path` in basis point.  
-ex) 1234 => 12.34% (0.1234) 
+- **`priceImpactBps(): number`**  
+  returns price impact when swapping with `path` in basis point.  
+  ex) 1234 => 12.34% (0.1234) 
 
-**`amountInWithToken():`[TokenWithAmount](#tokenwithamount)**  
-returns amountIn amount with "from" token info.  
+- **`amountInWithToken():`[TokenWithAmount](#tokenwithamount)**  
+  returns amountIn amount with "from" token info.  
 
-**`amountOutWithToken():`[TokenWithAmount](#tokenwithamount)**  
-returns amountOut amount with "to" token info.
+- **`amountOutWithToken():`[TokenWithAmount](#tokenwithamount)**  
+  returns amountOut amount with "to" token info.
 
 
 ## TokenWithAmount
@@ -152,8 +150,8 @@ returns amountOut amount with "to" token info.
 
 ### Methods  
 
-**`format(): string`**  
-returns formatted string from `amount` using `decimals`.  
+- **`format(): string`**  
+  returns formatted string from `amount` using `decimals`.  
 
-**`formatWithoutPriceImpact(): string`**
-returns formatted string from `amountWithoutPriceImpact` using `decimals`.  
+- **`formatWithoutPriceImpact(): string`**
+  returns formatted string from `amountWithoutPriceImpact` using `decimals`.  
