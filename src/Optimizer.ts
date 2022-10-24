@@ -338,8 +338,11 @@ class UniswapV2PathOptimizer {
             : [reserve1, reserve0];
         return { feeBps, reserveIn, reserveOut };
     }
-    public quote(tokenInId: number, tokenOutId: number, amountIn: BigNumberish): BigNumber {
-        const {reserveIn, reserveOut} = this.getReserves(tokenInId, tokenOutId);
+    public quote(tokenIn: address, tokenOut: address, amountIn: BigNumberish): BigNumber {
+        const {reserveIn, reserveOut} = this.getReserves(
+            this.getTokenId(tokenIn), 
+            this.getTokenId(tokenOut)
+        );
         return BigNumber.from(amountIn).mul(reserveOut).div(reserveIn);
     }
 

@@ -3,6 +3,7 @@ import Optimizer from ".."
 import { Provider } from "@ethersproject/providers";
 import { Factory, Factory__factory } from "../typechain";
 import { expect } from "chai";
+import { parseEther } from "ethers/lib/utils";
 
 const UniswapFactoryAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
 const UniswapRouterAddress = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
@@ -109,5 +110,11 @@ describe("UniswapV2PathOptimizer", async function(){
         expect(optimalResult.path.length).to.lessThanOrEqual(maxLength)
 
         const x = optimalResult.path[0]
+    })
+
+    it("quote", async function () {
+        const [from, to] = [WBTC, USDC];
+        const amountA = parseEther("1");
+        const amountB = optimizer.quote()
     })
 })
