@@ -2,46 +2,43 @@ import { BigNumber } from "ethers";
 import { Token, TokenWithAmount } from "./Token";
 
 export abstract class PathResult {
-    private _path!: TokenWithAmount[]
+    public readonly path!: TokenWithAmount[]
+    public readonly amountIn!: BigNumber
+    public readonly amountOut!: BigNumber
+
     constructor(path: Token[], amounts: BigNumber[]){
-        this._path = path.map(
+        this.path = path.map(
             (token, i) => new TokenWithAmount(token, amounts[i])
         );
+        this.amountIn = amounts[0];
+        this.amountOut = amounts[amounts.length - 1];
     }
+
     static setPriceImpact(result: PathResult, amountsWithoutPriceImpact: BigNumber[]){
-        result._path.forEach((path, i) => {
-            path.setAmountWithoutPriceImpact(amountsWithoutPriceImpact[i]);
-        })
+        result.path.forEach((path, i) => {
+            TokenWithAmount.setAmountWithoutPriceImpact(path, amountsWithoutPriceImpact[i]);
+        });
     }
-    public path(){
-        return this._path;
+
+    public format():String[]{
+        return this.path.map(token => token.format())
     }
-    public pathLength(){
-        return this._path.length;
+    public formatWithoutPriceImpact():String[]{
+        return this.path.map(token => token.formatWithoutPriceImpact())
     }
-    public format(){
-        return this.path().map(token => token.format())
-    }
-    public priceImpactBps(){
+    public priceImpactBps():number{
         throw new Error('priceImpactBps() must be implement.');
     }
-    public amountInWithToken(): TokenWithAmount{
-        return this.path()[0]
+    public amountInWithToken(): TokenWithAmount {
+        return this.path[0]
     }
-    public amountOutWithToken(): TokenWithAmount{
-        const _path = this.path();
-        return _path[_path.length - 1]
-    }
-    public amountIn(){
-        return this.amountInWithToken().amount
-    }
-    public amountOut(): BigNumber{
-        return this.amountOutWithToken().amount
+    public amountOutWithToken(): TokenWithAmount {
+        return this.path[this.path.length - 1]
     }
 }
 
 export class AmountsOutResult extends PathResult {
-    public priceImpactBps(): number{
+    public priceImpactBps(): number {
         const amountOut = this.amountOutWithToken();
         return amountOut.amountWithoutPriceImpact
             .sub(amountOut.amount)
@@ -51,7 +48,7 @@ export class AmountsOutResult extends PathResult {
     }
 }
 export class AmountsInResult extends PathResult {
-    public priceImpactBps(): number{
+    public priceImpactBps(): number {
         const amountIn = this.amountInWithToken();
         return amountIn.amount
             .sub(amountIn.amountWithoutPriceImpact)

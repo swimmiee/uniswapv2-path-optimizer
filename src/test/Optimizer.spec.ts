@@ -77,7 +77,7 @@ describe("UniswapV2PathOptimizer", async function(){
         });
         expect(optimalResult.amountInWithToken().address).to.eq(from);
         expect(optimalResult.amountOutWithToken().address).to.eq(to);
-        expect(optimalResult.pathLength()).to.lessThanOrEqual(maxLength)
+        expect(optimalResult.path.length).to.lessThanOrEqual(maxLength)
     })
 
     it("onChain:amountIn", async function () {
@@ -89,7 +89,7 @@ describe("UniswapV2PathOptimizer", async function(){
         );
         expect(optimalResult.amountInWithToken().address).to.eq(from);
         expect(optimalResult.amountOutWithToken().address).to.eq(to);
-        expect(optimalResult.pathLength()).to.lessThanOrEqual(maxLength)
+        expect(optimalResult.path.length).to.lessThanOrEqual(maxLength)
     })
 
     it.only("offChain:amountOut", async function () {
@@ -101,7 +101,7 @@ describe("UniswapV2PathOptimizer", async function(){
         });
         expect(optimalResult.amountInWithToken().address).to.eq(from);
         expect(optimalResult.amountOutWithToken().address).to.eq(to);
-        expect(optimalResult.pathLength()).to.lessThanOrEqual(maxLength);
+        expect(optimalResult.path.length).to.lessThanOrEqual(maxLength);
     })
 
     it("offChain:amountIn", async function () {
@@ -113,6 +113,8 @@ describe("UniswapV2PathOptimizer", async function(){
         });
         expect(optimalResult[0].address).to.eq(from);
         expect(optimalResult.amountOutWithToken().address).to.eq(to);
-        expect(optimalResult.pathLength()).to.lessThanOrEqual(maxLength)
+        expect(optimalResult.path.length).to.lessThanOrEqual(maxLength)
+
+        const x = optimalResult.path[0]
     })
 })

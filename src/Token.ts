@@ -2,25 +2,22 @@ import { utils, BigNumber, BigNumberish  } from "ethers";
 import { address } from "./types";
 
 export class Token {
-    address: string
-    symbol: string
-    decimals: number
+    public readonly address!: string
+    public readonly symbol!: string
+    public readonly decimals!: number
     constructor(_address: address, _symbol: string, _decimals: number){
         this.address = utils.getAddress(_address);
         this.symbol = _symbol;
         this.decimals = _decimals;
     }
     
-    format(amount: BigNumber){
-        return utils.formatUnits(amount, this.decimals);
-    }
-    parse(amount: string | number){
+    public parse(amount: string | number){
         return utils.parseUnits(String(amount), this.decimals);
     }
 }
 
 export class TokenWithAmount extends Token {
-    public amount!: BigNumber;
+    public readonly amount!: BigNumber;
     public amountWithoutPriceImpact!: BigNumber;
 
     constructor(token:Token, _amount: BigNumberish){
@@ -29,14 +26,17 @@ export class TokenWithAmount extends Token {
         // first initiate amount, and calculate right before returned from off chain
         this.amountWithoutPriceImpact = this.amount;
     }
-    format(){
+
+    static setAmountWithoutPriceImpact(tokenWithAmount: TokenWithAmount, value : BigNumber) {
+        tokenWithAmount.amountWithoutPriceImpact = value;
+        // set amountWithoutPriceImpact read-only
+        Object.freeze(this);
+    }
+
+    public format(): string{
         return utils.formatUnits(this.amount, this.decimals);
     }
-    formatWithoutPriceImpact(){
+    public formatWithoutPriceImpact(): string{
         return utils.formatUnits(this.amountWithoutPriceImpact, this.decimals);
-    }
-    
-    public setAmountWithoutPriceImpact(value : BigNumber) {
-        this.amountWithoutPriceImpact = value;
     }
 }

@@ -230,12 +230,12 @@ class UniswapV2PathOptimizer {
                 amounts
             )
         }))
-        .sort((a, b) => Number(b.result.amountOut().sub(a.result.amountOut()).gt(0)))
+        .sort((a, b) => Number(b.result.amountOut.sub(a.result.amountOut).gt(0)))
         .slice(0, take)
         .map(({index, result}) => {
             // get withoutPriceImpact at last step
             const amountsWithoutPriceImpact = this.getAmountsOut(
-                result.amountIn(),
+                result.amountIn,
                 paths[index],
                 false
             );
@@ -255,12 +255,12 @@ class UniswapV2PathOptimizer {
                 amounts
             )
         }))
-        .sort((a, b) => Number(a.result.amountIn().sub(b.result.amountIn()).gt(0)))
+        .sort((a, b) => Number(a.result.amountIn.sub(b.result.amountIn).gt(0)))
         .slice(0, take)
         .map(({index, result}) => {
             // get withoutPriceImpact at last step
             const amountsWithoutPriceImpact = this.getAmountsIn(
-                result.amountOut(),
+                result.amountOut,
                 paths[index],
                 false
             );
