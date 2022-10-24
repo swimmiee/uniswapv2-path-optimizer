@@ -67,6 +67,7 @@ extended by AmountsInResult, AmountsOutResult
 | amountIn  	| BigNumber                             	|
 | amountOut 	| BigNumber                              	|
 
+
 **Methods**  
 
 **`format(): String[]`**  
@@ -79,10 +80,10 @@ returns array of formatted strings from amountsWithoutPriceImpact in `path` toke
 returns price impact when swapping with `path` in basis point.  
 ex) 1234 => 12.34% (0.1234) 
 
-**`amountInWithToken(): [TokenWithAmount](#tokenwithamount)`**  
+**`amountInWithToken():`[TokenWithAmount](#tokenwithamount)**  
 returns amountIn amount with "from" token info.  
 
-**`amountOutWithToken(): [TokenWithAmount](#tokenwithamount)`**  
+**`amountOutWithToken():`[TokenWithAmount](#tokenwithamount)**  
 returns amountOut amount with "to" token info.
 
 
@@ -96,6 +97,7 @@ returns amountOut amount with "to" token info.
 | decimals                 	| number    	|
 | amount                   	| BigNumber 	|
 | amountWithoutPriceImpact 	| BigNumber 	|
+
 
 **Methods**  
 
