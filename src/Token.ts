@@ -33,10 +33,16 @@ export class TokenWithAmount extends Token {
         Object.freeze(this);
     }
 
-    public format(): string{
-        return utils.formatUnits(this.amount, this.decimals);
+    private _floor(value: string, places: number){
+        const [integer, digits] = value.split(".");
+        return digits === undefined ? integer : `${integer}.${digits.slice(0, places)}`;
     }
-    public formatWithoutPriceImpact(): string{
-        return utils.formatUnits(this.amountWithoutPriceImpact, this.decimals);
+    public format(places?: number): string{
+        const formatted = utils.formatUnits(this.amount, this.decimals);
+        return places ? this._floor(formatted, places) : formatted;
+    }
+    public formatWithoutPriceImpact(places?: number): string{
+        const formatted = utils.formatUnits(this.amountWithoutPriceImpact, this.decimals);
+        return places ? this._floor(formatted, places) : formatted;
     }
 }

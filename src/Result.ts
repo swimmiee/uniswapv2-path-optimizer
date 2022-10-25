@@ -20,11 +20,11 @@ export abstract class PathResult {
         });
     }
 
-    public format():String[]{
-        return this.path.map(token => token.format())
+    public format(places?: number):String[]{
+        return this.path.map(token => token.format(places))
     }
-    public formatWithoutPriceImpact():String[]{
-        return this.path.map(token => token.formatWithoutPriceImpact())
+    public formatWithoutPriceImpact(places?: number):String[]{
+        return this.path.map(token => token.formatWithoutPriceImpact(places))
     }
     public priceImpactBps():number{
         throw new Error('priceImpactBps() must be implement.');
