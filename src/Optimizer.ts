@@ -36,7 +36,10 @@ class UniswapV2PathOptimizer {
         this._defaultFeeBps = feeBps ?? 30;
     }
 
-    public checkIsReady(){
+    public ready(): boolean{
+        return this._ready;
+    }
+    private checkIsReady(){
         if(!this._ready){
             throw Error('execute "init" method first.');
         }
