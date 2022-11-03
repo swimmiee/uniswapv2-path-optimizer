@@ -60,13 +60,23 @@ await optimizer.refresh();
 # Core Entities
 ## UniswapV2PathOptimizer
 ### functions for get tokens & pools
-- **`tokens(): Token[]`**  
+- **`ready(): boolean`**
+  Check fetching tokens/pools info process is finished.
+- **`tokens(): Token[]`**
+  Returns array of all tokens  
 - **`pools(): Pool[]`**  
-- **`getToken(id: number): Token`**  
+  Returns array of all pools(pairs)
+- **`getToken(id: number): Token`**
+  get specific token by index of tokens array  
 - **`getTokenByAddress(address: address): Token|undefined`**  
+  Get specific token by address
 - **`getTokenId(address: address): number`**  
+  Get token's array index
 - **`getPoolByTokenId(tokenAId: number, tokenBId: number): Pool`**  
+  Get specific pool by index of pools array  
 - **`getPoolByAddress(tokenA: address, tokenB: address): Pool`**   
+  Get specific pool by pair tokens' addresses. It doesn't matter the order of the tokens is changed.
+
 
 ### functions for setting
 - **`async init(tokens: address[]): Promise<void>`**  
@@ -80,15 +90,24 @@ await optimizer.refresh();
 
 ### Calculate path on-chain
 - **`async getOutPathsOnChain(props: GetOutPathParams):Promise<AmountsOutResult[]>`**  
+  Calculate all possible paths of `getAmountsOut` function from onChain.  
 - **`async getOptimalOutPathOnChain(props: GetOutPathParams):Promise<AmountsOutResult>`**  
+  Returns the path with the most optimal value among the results of the `getOutPathsOnChain` function.  
 - **`async getInPathsOnChain(props: GetInPathParams):Promise<AmountsInResult[]>`**  
+  Calculate all possible paths of `getAmountsIn` function from onChain.  
 - **`async getOptimalInPathOnChain(props: GetOptimalInPathParams):Promise<AmountsInResult>`**  
+  Returns the path with the most optimal value among the results of the `getInPathsOnChain` function.  
 
 ### Calculate path off-chain
 - **`getOutPathsOffChain(props: GetOutPathParams):AmountsOutResult[]`**  
+  Calculate all possible paths of `getAmountsOut` function from offChain(client-side).
 - **`getOptimalOutPathOffChain(props: GetOptimalOutPathParams):AmountsOutResult`**  
+  Returns the path with the most optimal value among the results of the `getOutPathsOffChain` function.  
+
 - **`getInPathsOffChain(props: GetInPathParams):AmountsInResult[]`**  
+  Calculate all possible paths of `getAmountsIn` function from offChain(client-side).
 - **`getOptimalInPathOffChain(props: GetOptimalInPathParams):AmountsInResult`**  
+  Returns the path with the most optimal value among the results of the `getInPathsOffChain` function.  
 
 ### Basic calculator
 - **`quote(tokenInId: number, tokenOutId: number, amountIn: BigNumberish): BigNumber`**
