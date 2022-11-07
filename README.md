@@ -60,9 +60,9 @@ await optimizer.refresh();
 # Core Entities
 ## UniswapV2PathOptimizer
 ### functions for get tokens & pools
-- **`ready(): boolean`**
+- **`ready(): boolean`**  
   Check fetching tokens/pools info process is finished.
-- **`tokens(): Token[]`**
+- **`tokens(): Token[]`**  
   Returns array of all tokens  
 - **`pools(): Pool[]`**  
   Returns array of all pools(pairs)
