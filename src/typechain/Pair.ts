@@ -23,19 +23,24 @@ import type {
 export interface PairInterface extends utils.Interface {
   functions: {
     "getReserves()": FunctionFragment;
+    "feeBps()": FunctionFragment;
   };
 
-  getFunction(nameOrSignatureOrTopic: "getReserves"): FunctionFragment;
+  getFunction(
+    nameOrSignatureOrTopic: "getReserves" | "feeBps"
+  ): FunctionFragment;
 
   encodeFunctionData(
     functionFragment: "getReserves",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "feeBps", values?: undefined): string;
 
   decodeFunctionResult(
     functionFragment: "getReserves",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "feeBps", data: BytesLike): Result;
 
   events: {};
 }
@@ -76,6 +81,8 @@ export interface Pair extends BaseContract {
         _blockTimestampLast: number;
       }
     >;
+
+    feeBps(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
   getReserves(
@@ -88,6 +95,8 @@ export interface Pair extends BaseContract {
     }
   >;
 
+  feeBps(overrides?: CallOverrides): Promise<BigNumber>;
+
   callStatic: {
     getReserves(
       overrides?: CallOverrides
@@ -98,15 +107,21 @@ export interface Pair extends BaseContract {
         _blockTimestampLast: number;
       }
     >;
+
+    feeBps(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   filters: {};
 
   estimateGas: {
     getReserves(overrides?: CallOverrides): Promise<BigNumber>;
+
+    feeBps(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
     getReserves(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    feeBps(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

@@ -1,6 +1,6 @@
 {
   "name": "uniswapv2-path-optimizer",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "repository": {
     "type": "git",
     "url": "git://github.com/swimmiee/uniswapv2-path-optimizer.git"
