@@ -24,15 +24,20 @@ export interface ERC20Interface extends utils.Interface {
   functions: {
     "symbol()": FunctionFragment;
     "decimals()": FunctionFragment;
+    "feeBps()": FunctionFragment;
   };
 
-  getFunction(nameOrSignatureOrTopic: "symbol" | "decimals"): FunctionFragment;
+  getFunction(
+    nameOrSignatureOrTopic: "symbol" | "decimals" | "feeBps"
+  ): FunctionFragment;
 
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
+  encodeFunctionData(functionFragment: "feeBps", values?: undefined): string;
 
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "feeBps", data: BytesLike): Result;
 
   events: {};
 }
@@ -67,16 +72,22 @@ export interface ERC20 extends BaseContract {
     symbol(overrides?: CallOverrides): Promise<[string]>;
 
     decimals(overrides?: CallOverrides): Promise<[number]>;
+
+    feeBps(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
   symbol(overrides?: CallOverrides): Promise<string>;
 
   decimals(overrides?: CallOverrides): Promise<number>;
 
+  feeBps(overrides?: CallOverrides): Promise<BigNumber>;
+
   callStatic: {
     symbol(overrides?: CallOverrides): Promise<string>;
 
     decimals(overrides?: CallOverrides): Promise<number>;
+
+    feeBps(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   filters: {};
@@ -85,11 +96,15 @@ export interface ERC20 extends BaseContract {
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
+
+    feeBps(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    feeBps(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

@@ -17,7 +17,7 @@ const optimizer = new Optimizer({
     provider,
     factoryAddress: UniswapFactoryAddress,
     routerAddress: UniswapRouterAddress,
-    feeBps: 30                  // opttional, default 30 (0.3%)
+    feeBps: 30                  // optional, default 30 (0.3%)
     multicallAddress: "0x..."   // optional for some major chains
 });
 

@@ -35,6 +35,20 @@ const _abi = [
     stateMutability: "view",
     type: "function",
   },
+  {
+    constant: false,
+    inputs: [],
+    name: "feeBps",
+    outputs: [
+      {
+        name: "",
+        type: "uint",
+      },
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
 ];
 
 export class ERC20__factory {

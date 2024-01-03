@@ -9,6 +9,7 @@ export interface UniswapV2PathOptimizerProps {
     routerAddress: address,
     multicallAddress?: string,
     feeBps?: number
+    customFee?: boolean
 }
 
 export interface Pool {
